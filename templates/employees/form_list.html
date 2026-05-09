@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Forms - EMS{% endblock %}
+{% block page_title %}Form Builder{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h5 class="fw-bold mb-0">Form Templates</h5>
+        <small class="text-muted">{{ forms|length }} form{{ forms|length|pluralize }}</small>
+    </div>
+    <a href="{% url 'employees:form_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i> New Form
+    </a>
+</div>
+
+{% if forms %}
+<div class="row g-3">
+    {% for form in forms %}
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div style="width:40px;height:40px;background:#ede9fe;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-wpforms text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">{{ form.name }}</div>
+                            <div class="text-muted small">{{ form.fields|length }} field{{ form.fields|length|pluralize }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {% for field in form.fields|slice:":4" %}
+                    <span class="badge bg-light text-dark border me-1 mb-1" style="font-size:0.73rem;">
+                        {{ field.label }} <span class="text-muted">({{ field.type }})</span>
+                    </span>
+                    {% endfor %}
+                    {% if form.fields|length > 4 %}
+                    <span class="badge bg-secondary" style="font-size:0.73rem;">+{{ form.fields|length|add:"-4" }} more</span>
+                    {% endif %}
+                </div>
+                <div class="text-muted small mb-3">
+                    <i class="fas fa-clock me-1"></i> {{ form.updated_at|date:"M d, Y" }}
+                    &nbsp;·&nbsp;
+                    <i class="fas fa-users me-1"></i> {{ form.employees.count }} employee{{ form.employees.count|pluralize }}
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'employees:form_edit' form.pk %}" class="btn btn-sm btn-outline-primary flex-grow-1">
+                        <i class="fas fa-edit me-1"></i> Edit
+                    </a>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteForm({{ form.pk }}, this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-wpforms fa-3x text-muted mb-3"></i>
+        <p class="text-muted">No forms yet. Create your first form template.</p>
+        <a href="{% url 'employees:form_create' %}" class="btn btn-primary btn-sm">Create Form</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        for (let c of document.cookie.split(';')) {
+            c = c.trim();
+            if (c.startsWith(name + '=')) { cookieValue = decodeURIComponent(c.slice(name.length + 1)); break; }
+        }
+    }
+    return cookieValue;
+}
+
+function deleteForm(id, btn) {
+    if (!confirm('Delete this form? Employees using it may be affected.')) return;
+    axios.post(`/employees/forms/${id}/delete/`, {}, {
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+    }).then(() => {
+        btn.closest('.col-md-4').remove();
+    }).catch(() => alert('Error deleting form.'));
+}
+</script>
+{% endblock %}

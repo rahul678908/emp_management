@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Employee Management System{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --sidebar-width: 250px;
+        }
+        body { background: #f1f5f9; font-family: 'Inter', sans-serif; }
+        .sidebar {
+            width: var(--sidebar-width);
+            min-height: 100vh;
+            background: linear-gradient(160deg, #1e1b4b 0%, #312e81 100%);
+            position: fixed; top: 0; left: 0; z-index: 100;
+            padding: 0;
+        }
+        .sidebar-brand {
+            padding: 1.5rem 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .sidebar-brand i { color: #818cf8; }
+        .sidebar-menu { padding: 1rem 0; }
+        .sidebar-section {
+            padding: 0.4rem 1.25rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255,255,255,0.4);
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        .sidebar-link {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.65rem 1.25rem;
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: #818cf8;
+        }
+        .sidebar-link i { width: 18px; text-align: center; opacity: 0.8; }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        .topbar {
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .topbar-title { font-weight: 600; color: #1e293b; font-size: 1.05rem; }
+        .page-body { padding: 1.5rem; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+        .card-header {
+            background: white; border-bottom: 1px solid #f1f5f9;
+            padding: 1rem 1.25rem; font-weight: 600; color: #1e293b;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        .btn-primary { background: var(--primary); border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+        .table th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 600; background: #f8fafc; }
+        .badge-form { background: #ede9fe; color: #7c3aed; font-weight: 500; font-size: 0.78rem; }
+        .avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--primary); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 0.85rem;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+{% if user.is_authenticated %}
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-users-cog"></i> EMS
+    </div>
+    <nav class="sidebar-menu">
+        <div class="sidebar-section">Main</div>
+        <a href="{% url 'employees:list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'list' %}active{% endif %}">
+            <i class="fas fa-users"></i> Employees
+        </a>
+        <a href="{% url 'employees:create' %}" class="sidebar-link {% if request.resolver_match.url_name == 'create' %}active{% endif %}">
+            <i class="fas fa-user-plus"></i> Add Employee
+        </a>
+        <div class="sidebar-section">Forms</div>
+        <a href="{% url 'employees:form_list' %}" class="sidebar-link {% if 'form' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="fas fa-wpforms"></i> Form Builder
+        </a>
+        <a href="{% url 'employees:form_create' %}" class="sidebar-link">
+            <i class="fas fa-plus-square"></i> New Form
+        </a>
+        <div class="sidebar-section">Account</div>
+        <a href="{% url 'authentication:profile' %}" class="sidebar-link">
+            <i class="fas fa-user-circle"></i> Profile
+        </a>
+        <a href="{% url 'authentication:change_password' %}" class="sidebar-link">
+            <i class="fas fa-key"></i> Change Password
+        </a>
+        <a href="{% url 'authentication:logout' %}" class="sidebar-link">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </nav>
+</div>
+<div class="main-content">
+    <div class="topbar">
+        <span class="topbar-title">{% block page_title %}Dashboard{% endblock %}</span>
+        <div class="d-flex align-items-center gap-2">
+            <div class="avatar">{{ user.username|first|upper }}</div>
+            <small class="text-muted">{{ user.get_full_name|default:user.username }}</small>
+        </div>
+    </div>
+    <div class="page-body">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% block content %}{% endblock %}
+    </div>
+</div>
+{% else %}
+{% block auth_content %}{% endblock %}
+{% endif %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,258 @@
+{
+  "info": {
+    "name": "Employee Management System API",
+    "description": "Complete API collection for EMS - Django REST Framework with JWT Auth",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000", "type": "string" },
+    { "key": "access_token", "value": "", "type": "string" },
+    { "key": "refresh_token", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/register/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"johndoe\",\n  \"email\": \"john@example.com\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"password\": \"Password@123\",\n  \"password2\": \"Password@123\",\n  \"phone\": \"9876543210\",\n  \"address\": \"123 Main Street\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["if(pm.response.code===201){const d=pm.response.json();pm.collectionVariables.set('access_token',d.tokens.access);pm.collectionVariables.set('refresh_token',d.tokens.refresh);}"] }
+          }]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/login/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"johndoe\",\n  \"password\": \"Password@123\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["if(pm.response.code===200){const d=pm.response.json();pm.collectionVariables.set('access_token',d.tokens.access);pm.collectionVariables.set('refresh_token',d.tokens.refresh);}"] }
+          }]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/token/refresh/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": "{{base_url}}/api/auth/logout/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": "{{base_url}}/api/auth/profile/"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": "{{base_url}}/api/auth/profile/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"9876543210\",\n  \"address\": \"456 New Street\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": "{{base_url}}/api/auth/change-password/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"old_password\": \"Password@123\",\n  \"new_password\": \"NewPass@456\",\n  \"new_password2\": \"NewPass@456\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dynamic Forms",
+      "item": [
+        {
+          "name": "List Forms",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": "{{base_url}}/api/forms/"
+          }
+        },
+        {
+          "name": "Create Form",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": "{{base_url}}/api/forms/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Employee Onboarding\",\n  \"fields\": [\n    {\"label\": \"Full Name\", \"type\": \"text\", \"required\": true, \"order\": 0},\n    {\"label\": \"Email\", \"type\": \"email\", \"required\": true, \"order\": 1},\n    {\"label\": \"Department\", \"type\": \"text\", \"required\": false, \"order\": 2},\n    {\"label\": \"Date of Joining\", \"type\": \"date\", \"required\": true, \"order\": 3},\n    {\"label\": \"Salary\", \"type\": \"number\", \"required\": false, \"order\": 4}\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Form",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": "{{base_url}}/api/forms/1/"
+          }
+        },
+        {
+          "name": "Update Form",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": "{{base_url}}/api/forms/1/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Onboarding Form\",\n  \"fields\": [\n    {\"label\": \"Full Name\", \"type\": \"text\", \"required\": true, \"order\": 0},\n    {\"label\": \"Email\", \"type\": \"email\", \"required\": true, \"order\": 1},\n    {\"label\": \"Phone\", \"type\": \"tel\", \"required\": false, \"order\": 2}\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Form",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": "{{base_url}}/api/forms/1/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "List Employees",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/employees/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", ""],
+              "query": [
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "field", "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Employees (with search)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/employees/?search=John&field=Full Name",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", ""],
+              "query": [
+                { "key": "search", "value": "John" },
+                { "key": "field", "value": "Full Name" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": "{{base_url}}/api/employees/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"form\": 1,\n  \"data\": {\n    \"Full Name\": \"John Doe\",\n    \"Email\": \"john@example.com\",\n    \"Department\": \"Engineering\",\n    \"Date of Joining\": \"2024-01-15\",\n    \"Salary\": \"75000\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Employee",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": "{{base_url}}/api/employees/1/"
+          }
+        },
+        {
+          "name": "Update Employee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": "{{base_url}}/api/employees/1/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"form\": 1,\n  \"data\": {\n    \"Full Name\": \"John Updated\",\n    \"Email\": \"john.updated@example.com\",\n    \"Department\": \"Management\",\n    \"Date of Joining\": \"2024-01-15\",\n    \"Salary\": \"90000\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Employee",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": "{{base_url}}/api/employees/1/"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Login - EMS{% endblock %}
+{% block auth_content %}
+<div style="min-height:100vh; background: linear-gradient(135deg,#1e1b4b,#312e81); display:flex; align-items:center; justify-content:center;">
+    <div style="width:100%; max-width:420px; padding:1rem;">
+        <div class="card p-4">
+            <div class="text-center mb-4">
+                <div style="width:56px;height:56px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <i class="fas fa-users-cog text-white fa-lg"></i>
+                </div>
+                <h4 class="fw-bold">Employee Management</h4>
+                <p class="text-muted small">Sign in to your account</p>
+            </div>
+            {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Username</label>
+                    <input type="text" name="username" class="form-control" placeholder="Enter username" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Sign In</button>
+            </form>
+            <p class="text-center mt-3 mb-0 small text-muted">
+                Don't have an account? <a href="{% url 'authentication:register' %}">Register here</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

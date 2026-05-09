@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Profile - EMS{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="fas fa-user-circle text-primary"></i> Profile Settings
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="text-center mb-4">
+                        {% if profile.profile_picture %}
+                            <img src="{{ profile.profile_picture.url }}" class="rounded-circle" style="width:90px;height:90px;object-fit:cover;">
+                        {% else %}
+                            <div class="avatar mx-auto" style="width:90px;height:90px;font-size:2rem;">
+                                {{ user.username|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div class="mt-2">
+                            <label class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-camera me-1"></i>Change Photo
+                                <input type="file" name="profile_picture" accept="image/*" hidden>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">First Name</label>
+                            <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Last Name</label>
+                            <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Email</label>
+                            <input type="email" name="email" class="form-control" value="{{ user.email }}">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Phone</label>
+                            <input type="text" name="phone" class="form-control" value="{{ profile.phone }}">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Address</label>
+                            <textarea name="address" class="form-control" rows="3">{{ profile.address }}</textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
