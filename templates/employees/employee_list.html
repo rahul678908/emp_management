@@ -65,11 +65,13 @@
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 <div class="avatar" style="width:32px;height:32px;font-size:0.8rem;">
-                                    {% with emp.data.values|first as first_val %}
-                                        {{ first_val|first|upper|default:"?" }}
-                                    {% endwith %}
+                                    {% for key, value in emp.data.items %}
+                                        {{ value|first|upper|default:"?" }}
+                                    {% empty %}
+                                        ?
+                                    {% endfor %}
                                 </div>
-                                <div>
+
                                     <div class="fw-semibold small">{{ emp }}</div>
                                     <div class="text-muted" style="font-size:0.75rem;">ID: {{ emp.pk }}</div>
                                 </div>

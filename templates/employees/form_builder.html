@@ -85,7 +85,7 @@
             <div class="card-body p-3">
                 <small class="text-muted fw-semibold d-block mb-2">Available Field Types</small>
                 <div class="d-flex flex-wrap gap-2">
-                    {% for t in "text,number,email,password,date,textarea,select,checkbox,tel,url"|split:"," %}
+                    {% for t in field_types %}
                     <span class="badge bg-light text-dark border" style="font-size:0.78rem;">{{ t }}</span>
                     {% endfor %}
                 </div>
